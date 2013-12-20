@@ -174,6 +174,30 @@ namespace octet {
       return handle;
     }
 
+    static GLuint make_cubemap_texture(unsigned gl_kind,
+      unsigned size, unsigned in_format, unsigned width, unsigned height,
+      uint8_t *posx, uint8_t *posy, uint8_t *posz, uint8_t *negx, uint8_t *negy, uint8_t *negz) {
+      GLuint handle = 0;
+      glGenTextures(1, &handle);
+
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+      glBindTexture(GL_TEXTURE_CUBE_MAP, handle);
+
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl_kind, width, height, 0, in_format, GL_UNSIGNED_BYTE, (void*)posx);
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl_kind, width, height, 0, in_format, GL_UNSIGNED_BYTE, (void*)posy);
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl_kind, width, height, 0, in_format, GL_UNSIGNED_BYTE, (void*)posz);
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl_kind, width, height, 0, in_format, GL_UNSIGNED_BYTE, (void*)negx);
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl_kind, width, height, 0, in_format, GL_UNSIGNED_BYTE, (void*)negy);
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl_kind, width, height, 0, in_format, GL_UNSIGNED_BYTE, (void*)negz);
+
+      glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      return handle;
+    }
+
     static ALuint make_sound_buffer(unsigned kind, unsigned rate, dynarray<unsigned char> &buffer, unsigned offset, unsigned size) {
       ALuint id = 0;
       alGenBuffers(1, &id);

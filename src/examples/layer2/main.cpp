@@ -4,9 +4,7 @@
 //
 // Modular Framework for OpenGLES2 rendering on multiple platforms.
 //
-// Animation example.
-//
-// Demonstrates a basic scene graph with import from Collada.
+// Reimplementation of Chapter 8 of GPU Gems 
 //
 
 #include "../../platform/platform.h"
@@ -21,6 +19,7 @@
 // a C++ program starts here with the command line arguments in argv[]
 // argc is the number of arguments with argv[0] set to the command name.
 //
+
 int main(int argc, char **argv) {
   //octet::unit_test_ray();
 

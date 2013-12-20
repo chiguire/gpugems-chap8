@@ -27,6 +27,7 @@ namespace octet {
     static sounds_t &sounds() { static sounds_t instance;  return instance; }
 
     static GLuint get_texture_handle_internal(unsigned gl_kind, const char *name);
+    static GLuint get_cubemap_texture_handle_internal(unsigned gl_kind, const char *name, const char *posx, const char *posy, const char *posz, const char *negx, const char *negy, const char *negz);
 
     static unsigned u4(unsigned char *src) {
       return src[0] + src[1] * 256 + src[2] * 65536 + src[3] * 0x1000000;
@@ -108,6 +109,17 @@ namespace octet {
       GLuint &result = textures()[name];
       if (result == 0) {
         result = get_texture_handle_internal(gl_kind, name);
+      }
+      return result;
+    }
+
+    static GLuint get_cubemap_texture_handle(unsigned gl_kind, const char *texName,
+      const char *posx, const char *posy, const char *posz,
+      const char *negx, const char *negy, const char *negz) {
+      GLuint &result = textures()[texName];
+      if (result == 0) {
+        result = get_cubemap_texture_handle_internal(gl_kind, texName,
+          posx, posy, posz, negx, negy, negz);
       }
       return result;
     }
