@@ -20,13 +20,19 @@ namespace octet {
     mat4t cameraToWorld;
     mat4t modelToWorld;
 
+    float rough;
+    float spacing;
+    vec4 hiliteColor;
+    vec3 lightPosition;
+
     // helper to rotate camera about scene
     //mouse_ball ball;
 
     GLuint cubeMapTex;
     GLuint leMapTex;
 
-    cubemap_reflection_shader cubeMapReflectionShader;
+    cubemap_diffraction_shader cubeMapDiffractionShader;
+    //cubemap_reflection_shader cubeMapReflectionShader;
     cubemap_sky_shader cubeMapSkyShader;
 
   public:
@@ -43,11 +49,18 @@ namespace octet {
     // this is called once OpenGL is initialized
     void app_init() {
       // set up the shaders
-      cubeMapReflectionShader.init();
+      cubeMapDiffractionShader.init();
+      //cubeMapReflectionShader.init();
       cubeMapSkyShader.init();
 
       cameraToWorld.loadIdentity();
       modelToWorld.loadIdentity();
+
+      rough = 50.0f;
+      spacing = 10.0f;
+      lightPosition = vec3(0.0f, 0.0f, 1.0f);
+      hiliteColor = vec4(1.0f, 0.7f, 0.3f, 1.0f);
+
 
       rotateAngle = 0;
 
@@ -128,13 +141,15 @@ namespace octet {
       skyCameraToWorld.rotate(camera_rotation[1], 0.0f, 1.0f, 0.0f);
       skyCameraToWorld.rotate(camera_rotation[0], 1.0f, 0.0f, 0.0f);
 
+      vec3 cameraPositionNormalized = camera_position.normalize();
+
       mat4t skyModelToProjection = mat4t::build_projection_matrix(skyModelToWorld, skyCameraToWorld);
 
       glActiveTexture(GL_TEXTURE0);
       glEnable(GL_TEXTURE_CUBE_MAP);
       glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTex);
 
-      cubeMapSkyShader.render(&skyModelToProjection, &camera_position, 0);
+      cubeMapSkyShader.render(&skyModelToProjection, &cameraPositionNormalized, 0);
 
       float skyCubeVertices[] =
       {    // x, y, z
@@ -191,18 +206,22 @@ namespace octet {
       modelToWorld.rotate(rotateAngle, 0.0f, 1.0f, 0.0f);
 
       mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
+      mat4t modelToWorldIT = modelToWorld.inverse4x4().transpose4x4();
+
+      vec3 cameraPositionNormalized = camera_position.normalize();
 
       glActiveTexture(GL_TEXTURE0);
       glEnable(GL_TEXTURE_CUBE_MAP);
       glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTex);
       
-      cubeMapReflectionShader.render(&modelToProjection, &modelToWorld, 0);
+      cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+      //cubeMapReflectionShader.render(&modelToProjection, &modelToWorld, 0);
 
       float vertices[] = {
-        1.0f,  1.0f, -1.0f, -1.0f, -1.0f, 1.0f,
-        1.0f,  1.0f,  1.0f, -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f,  1.0f, -1.0f, 1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f,
+        1.0f,  1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 
+        1.0f,  1.0f,  1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, -1.0f,  1.0f, 1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
 
         -1.0f,  1.0f,  1.0f, 1.0f, -1.0f, -1.0f,
         -1.0f,  1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 
@@ -231,7 +250,7 @@ namespace octet {
       };
 
       glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), vertices);
-      glVertexAttribPointer(attribute_normal, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), vertices+3);
+      glVertexAttribPointer(attribute_normal, 3, GL_FLOAT, GL_TRUE, 6*sizeof(float), vertices+3);
 
       glEnableVertexAttribArray(attribute_pos);
       glEnableVertexAttribArray(attribute_normal);
