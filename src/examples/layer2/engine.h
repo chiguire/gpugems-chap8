@@ -218,42 +218,44 @@ namespace octet {
       //cubeMapReflectionShader.render(&modelToProjection, &modelToWorld, 0);
 
       float vertices[] = {
-        1.0f,  1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 
-        1.0f,  1.0f,  1.0f, 1.0f, 1.0f, 1.0f,
-        1.0f, -1.0f,  1.0f, 1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+        1.0f,  1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, -1.0f,  1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
 
-        -1.0f,  1.0f,  1.0f, 1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 
-        -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f, 1.0f, 1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
 
-        -1.0f,  1.0f, -1.0f, 1.0f, -1.0f, 1.0f,
-        1.0f,  1.0f, -1.0f, -1.0f, -1.0f, 1.0f,
-        1.0f,  1.0f,  1.0f, -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f, 1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
+        1.0f,  1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
+        1.0f,  1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+        -1.0f,  1.0f,  1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
 
-        -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
-        1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f,
-        1.0f, -1.0f,  1.0f, -1.0f, 1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f, 1.0f, 1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
+        1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
+        1.0f, -1.0f,  1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+        -1.0f, -1.0f,  1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
         
-        1.0f,  1.0f,  1.0f, -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f, 1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f, 1.0f, 1.0f, -1.0f,
-        1.0f, -1.0f,  1.0f, -1.0f, 1.0f, -1.0f,
+        1.0f,  1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+        -1.0f,  1.0f,  1.0f, -1.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+        -1.0f, -1.0f,  1.0f, -1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+        1.0f, -1.0f,  1.0f, 1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
         
-        -1.0f,  1.0f, -1.0f, 1.0f, -1.0f, 1.0f,
-        1.0f,  1.0f, -1.0f, -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f
+        -1.0f,  1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        1.0f,  1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f
       };
 
-      glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), vertices);
-      glVertexAttribPointer(attribute_normal, 3, GL_FLOAT, GL_TRUE, 6*sizeof(float), vertices+3);
+      glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), vertices);
+      glVertexAttribPointer(attribute_normal, 3, GL_FLOAT, GL_TRUE, 9*sizeof(float), vertices+3);
+      glVertexAttribPointer(attribute_tangent, 3, GL_FLOAT, GL_TRUE, 9*sizeof(float), vertices+6);
 
       glEnableVertexAttribArray(attribute_pos);
       glEnableVertexAttribArray(attribute_normal);
+      glEnableVertexAttribArray(attribute_tangent);
 
       glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
       glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
@@ -264,6 +266,7 @@ namespace octet {
 
       glDisableVertexAttribArray(attribute_pos);
       glDisableVertexAttribArray(attribute_normal);
+      glDisableVertexAttribArray(attribute_tangent);
     }
   };
 }

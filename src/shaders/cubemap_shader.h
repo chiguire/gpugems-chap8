@@ -30,7 +30,7 @@ namespace octet {
       // it inputs pos and uv from each corner
       // it outputs gl_Position and uv_ to the rasterizer
       const char vertex_shader[] = SHADER_STR(
-        varying vec3 color_;
+        varying vec4 color_;
         varying vec3 normal_;
 
         attribute vec4 pos;
@@ -56,7 +56,7 @@ namespace octet {
         void main() {
           vec3 P = (modelToWorld * pos).xyz;
           vec3 L = normalize(lightPosition - P);
-          vec3 V = normalize(eyePosition - P);
+          vec3 V = normalize(cameraPosition - P);
           vec3 H = L + V;
           vec3 N = modelToWorldIT * normal;
           vec3 T = modelToWorldIT * tangent;
@@ -68,10 +68,10 @@ namespace octet {
 
           if (u < 0.0) u = -u;
 
-          vec4 cdiff(0.0, 0.0, 0.0, 1.0);
+          vec4 cdiff = vec4(0.0, 0.0, 0.0, 1.0);
 
           for (int n = 1; n < 8; n++) {
-            float y = 2.0 * u / n - 1.0;
+            float y = 2.0 * u / float(n) - 1.0;
             cdiff.xyz += blend3(vec3(4.0 * (y - 0.75), 4.0 * (y - 0.5), 4.0 * (y - 0.25)));
           }
           gl_Position = modelToProjection * pos; 
@@ -85,7 +85,7 @@ namespace octet {
       // this is called for every fragment
       // it outputs gl_FragColor, the color of the pixel and inputs uv_
       const char fragment_shader[] = SHADER_STR(
-        varying vec3 color_;
+        varying vec4 color_;
 
         uniform samplerCube sampler;
 
