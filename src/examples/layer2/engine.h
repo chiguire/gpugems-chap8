@@ -35,6 +35,9 @@ namespace octet {
     //cubemap_reflection_shader cubeMapReflectionShader;
     cubemap_sky_shader cubeMapSkyShader;
 
+    color_shader cshader;
+    mesh ring;
+
   public:
     // this is called when we construct the class
     engine(int argc, char **argv)
@@ -52,6 +55,7 @@ namespace octet {
       cubeMapDiffractionShader.init();
       //cubeMapReflectionShader.init();
       cubeMapSkyShader.init();
+      cshader.init();
 
       cameraToWorld.loadIdentity();
       modelToWorld.loadIdentity();
@@ -61,6 +65,14 @@ namespace octet {
       lightPosition = vec3(0.0f, 0.0f, 1.0f);
       hiliteColor = vec4(1.0f, 0.7f, 0.3f, 1.0f);
 
+      vec4 ring_normal = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+
+      mesh_builder mb;
+      mb.add_cone(1.0f, 1.0f, 20, 10, 1.0f);
+      mb.get_mesh(ring);
+
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
       rotateAngle = 0;
 
@@ -86,6 +98,8 @@ namespace octet {
 
       renderCD();
       
+      //renderCone();
+     
       rotateAngle += 1.0f;
 
       if (is_key_down('W')) {
@@ -133,6 +147,9 @@ namespace octet {
 
     void renderSky() {
       glDisable(GL_DEPTH_TEST);
+
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
       mat4t skyModelToWorld;
       skyModelToWorld.loadIdentity();
@@ -196,6 +213,9 @@ namespace octet {
     void renderCD() {
       glEnable(GL_TEXTURE_CUBE_MAP);
       glEnable(GL_DEPTH_TEST);
+
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
       cameraToWorld.loadIdentity();
       cameraToWorld.rotate(camera_rotation[1], 0.0f, 1.0f, 0.0f);
@@ -268,5 +288,27 @@ namespace octet {
       glDisableVertexAttribArray(attribute_normal);
       glDisableVertexAttribArray(attribute_tangent);
     }
+
+    void renderCone() {
+      glEnable(GL_DEPTH_TEST);
+
+      cameraToWorld.loadIdentity();
+      cameraToWorld.rotate(camera_rotation[1], 0.0f, 1.0f, 0.0f);
+      cameraToWorld.rotate(camera_rotation[0], 1.0f, 0.0f, 0.0f);
+      cameraToWorld.translate(camera_position.x(), camera_position.y(), camera_position.z());
+      
+      modelToWorld.loadIdentity();
+      modelToWorld.rotate(rotateAngle, 0.0f, 1.0f, 0.0f);
+
+      mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
+
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+      cshader.render(modelToProjection, vec4(0.5f, 0.4f, 0.1f, 1.0f));
+      ring.render();
+
+    }
+     
   };
 }
