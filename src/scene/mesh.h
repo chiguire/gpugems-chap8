@@ -11,9 +11,11 @@ namespace octet {
   class mesh : public resource {
   public:
     // default vertex format
+    // added tangent
     struct vertex {
       vec3p pos;
       vec3p normal;
+      vec3 tangent;
       vec2p uv;
     };
   private:
@@ -455,7 +457,7 @@ namespace octet {
       set_mode( GL_LINES );
     }
 
-    // make the normal, tangent, bitangent space for each vertex
+    // make the normal, tangent, bitangent space for each vertex; tangent already included here
     void add_3d_normals(const mesh &source) {
       init();
       if (source.get_mode() != GL_TRIANGLES || source.get_num_indices() % 3 != 0) {
