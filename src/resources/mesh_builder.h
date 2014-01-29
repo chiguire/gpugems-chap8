@@ -32,10 +32,10 @@ namespace octet {
     // For a cube, add the front face. Matrix transforms are used to add the others.
     void add_front_face(float size) {
       unsigned short cur_vertex = (unsigned short)vertices.size();
-      add_vertex(vec4(-size, -size, size, 1), vec4(0, 0, 1, 0), 0, 0);
-      add_vertex(vec4(-size,  size, size, 1), vec4(0, 0, 1, 0), 0, 1);
-      add_vertex(vec4( size,  size, size, 1), vec4(0, 0, 1, 0), 1, 1);
-      add_vertex(vec4( size, -size, size, 1), vec4(0, 0, 1, 0), 1, 0);
+      add_vertex(vec4(-size, -size, size, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 0, 0);
+      add_vertex(vec4(-size,  size, size, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 0, 1);
+      add_vertex(vec4( size,  size, size, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 1, 1);
+      add_vertex(vec4( size, -size, size, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 1, 0);
       indices.push_back(cur_vertex+0);
       indices.push_back(cur_vertex+1);
       indices.push_back(cur_vertex+2);
@@ -46,13 +46,14 @@ namespace octet {
 
     // modified add_ring in order to include tangent
     // add a ring in the x-y plane. Return index of first index
-    unsigned add_ring(float radius, const vec4 &normal, unsigned num_vertices, float v, float uvscale) {
+    unsigned add_ring(float radius, const vec4 &normal, const vec4 &tangent, unsigned num_vertices, float v, float uvscale) {
       float rnv = 1.0f / num_vertices;
       float angle = 3.1415926536f * 2 * rnv;
       float delta_c = cosf(angle), delta_s = sinf(angle);
       mat4t save_matrix = matrix;
       unsigned first_index = (unsigned)vertices.size();
       float u = 0;
+
       for (unsigned i = 0; i <= num_vertices; ++i) {
         add_vertex(vec4(radius, 0, 0, 1), normal, tangent, u, v);
         matrix.rotateSpecial(delta_c, delta_s, 0, 1);
@@ -75,8 +76,8 @@ namespace octet {
 
       if (!is_sphere) {
         // end cap for cone
-        unsigned center = add_vertex(vec4(0, 0, 0, 1), vec4(0, 0, -1, 0), 0, 1);
-        unsigned cur_ring = add_ring(radius, vec4(0, 0, -1, 0), slices, 0, uvscale);
+        unsigned center = add_vertex(vec4(0, 0, 0, 1), vec4(0, 0, -1, 0), vec4(0, 0, -1, 0), 0, 1);
+        unsigned cur_ring = add_ring(radius, vec4(0, 0, -1, 0), vec4(0, 0, -1, 0), slices, 0, uvscale);
         for (unsigned j = 0; j != slices; ++j) {
           indices.push_back(center);
           indices.push_back(cur_ring + j);
@@ -90,9 +91,10 @@ namespace octet {
         float ring_radius = is_sphere ? radius * s : radius * (stacks - i) * rstacks;
         float z = is_sphere ? (-radius) * c : height * (stacks - i) * rstacks;
         vec4 normal = is_sphere ? vec4(s, 0, -c, 0) : cone_normal;
+        vec4 tangent = vec4(0, 0, 1, 0);
         matrix = save_matrix;
         matrix.translate(0, 0, z);
-        unsigned cur_ring = add_ring(ring_radius, normal, slices, v, uvscale);
+        unsigned cur_ring = add_ring(ring_radius, normal, tangent, slices, v, uvscale);
         //printf("%d/%d z=%f r=%f\n", i, stacks, z, ring_radius);
         v += rstacks * radius * uvscale;
         if (i != 0) {
@@ -166,10 +168,10 @@ namespace octet {
       for (unsigned i = 0; i != nx; ++i) {
         for (unsigned j = 0; j != ny; ++j) {
           unsigned short cur_vertex = (unsigned short)vertices.size();
-          add_vertex(vec4( i*xsize+sizeBy2, j*ysize+sizeBy2, 0, 1), vec4(0, 0, 1, 0), 0, 0);
-          add_vertex(vec4( i*xsize+sizeBy2, (j+1)*ysize+sizeBy2, 0, 1), vec4(0, 0, 1, 0), 0, 1);
-          add_vertex(vec4( (i+1)*xsize+sizeBy2, (j+1)*ysize+sizeBy2, 0, 1), vec4(0, 0, 1, 0), 1, 1);
-          add_vertex(vec4( (i+1)*xsize+sizeBy2, j*ysize+sizeBy2, 0, 1), vec4(0, 0, 1, 0), 1, 0);
+          add_vertex(vec4( i*xsize+sizeBy2, j*ysize+sizeBy2, 0, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 0, 0);
+          add_vertex(vec4( i*xsize+sizeBy2, (j+1)*ysize+sizeBy2, 0, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 0, 1);
+          add_vertex(vec4( (i+1)*xsize+sizeBy2, (j+1)*ysize+sizeBy2, 0, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 1, 1);
+          add_vertex(vec4( (i+1)*xsize+sizeBy2, j*ysize+sizeBy2, 0, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 1, 0);
           indices.push_back(cur_vertex+0);
           indices.push_back(cur_vertex+1);
           indices.push_back(cur_vertex+2);

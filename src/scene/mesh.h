@@ -447,8 +447,9 @@ namespace octet {
       for (unsigned i = 0; i != source.get_num_vertices(); ++i) {
         vec4 pos = source.get_value(pos_slot, i);
         vec4 normal = source.get_value(normal_slot, i);
-        unsigned idx = builder.add_vertex(pos, normal, 0, 0);
-        builder.add_vertex(pos + normal * length, normal, 0, 0);
+        vec4 tangent = vec4(0, 0, 1, 0);
+        unsigned idx = builder.add_vertex(pos, normal, tangent, 0, 0);
+        builder.add_vertex(pos + normal * length, normal, tangent, 0, 0);
         builder.add_index(idx);
         builder.add_index(idx+1);
       }
