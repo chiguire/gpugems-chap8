@@ -44,22 +44,6 @@ namespace octet {
       indices.push_back(cur_vertex+3);
     }
 
-    //Add a CD for the difraction
-    void add_one_CD(float radius, float v, float uvscale) {
-      unsigned short cur_vertex = (unsigned short)vertices.size();
-      add_vertex(vec4(-radius, -radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 0, 0);
-      add_vertex(vec4(-radius,  radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 0, 1);
-      add_vertex(vec4( radius,  radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 1, 1);
-      add_vertex(vec4( radius, -radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 1, 0);
-      add_ring(radius, vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 4, v, uvscale);
-      indices.push_back(cur_vertex+0);
-      indices.push_back(cur_vertex+1);
-      indices.push_back(cur_vertex+2);
-      indices.push_back(cur_vertex+0);
-      indices.push_back(cur_vertex+2);
-      indices.push_back(cur_vertex+3);
-    }
-
     // modified add_ring in order to include tangent
     // add a ring in the x-y plane. Return index of first index
     unsigned add_ring(float radius, const vec4 &normal, const vec4 &tangent, unsigned num_vertices, float v, float uvscale) {
@@ -209,6 +193,25 @@ namespace octet {
     // as in glutSolidCone.
     void add_cone(float radius, float height, unsigned slices, unsigned stacks, float uvscale=1) {
       add_cone_or_sphere(radius, height, slices, stacks, uvscale, false);
+
+    }
+    //Add a CD for the difraction
+    void add_one_CD(float radius, float v, float uvscale) {
+      unsigned short cur_vertex = (unsigned short)vertices.size();
+      unsigned short num_vertices = 30;
+      //dd_vertex(vec4(-radius, -radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 0, 0);
+      //add_vertex(vec4(-radius,  radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 0, 1);
+      //add_vertex(vec4( radius,  radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 1, 1);
+      //add_vertex(vec4( radius, -radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 1, 0);
+      add_vertex(vec4(0, 0, 0, 1), vec4(0, 0, 1, 1), vec4(0, 1, 0, 1), 0, 0);
+      add_ring(radius, vec4(0, 0, 1, 1), vec4(0, 1, 0, 1), num_vertices, v, uvscale);
+      for (int i = 0; i != num_vertices+1; i++) {
+        indices.push_back(cur_vertex+0);
+        indices.push_back(cur_vertex+1+i);
+        indices.push_back(cur_vertex+1+((i+1)%(num_vertices+1)));
+
+        printf("Adding indices (%d, %d, %d)\n", cur_vertex+0, cur_vertex+1+i, cur_vertex+1+((i+1)%(num_vertices+1)));
+      }
     }
 
     // get a mesh mesh from the builder either as VBOs or allocated memory.

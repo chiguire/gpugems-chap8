@@ -105,7 +105,9 @@ namespace octet {
             cdiff.xyz += blend3(vec3(4.0 * (y - 0.75), 4.0 * (y - 0.5), 4.0 * (y - 0.25)));
           }
 
-          gl_FragColor = cdiff + anis;
+          vec4 cubemapColor = textureCube(sampler, normalize(position_));
+
+          gl_FragColor = cubemapColor + cdiff + anis;
           //textureCube(sampler, normal_);
         }
       );

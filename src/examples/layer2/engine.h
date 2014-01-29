@@ -68,7 +68,7 @@ namespace octet {
       vec4 ring_normal = vec4(0.0f, 1.0f, 0.0f, 1.0f);
 
       mesh_builder mb;
-      mb.add_cone(1.0f, 1.0f, 20, 10, 1.0f);
+      mb.add_one_CD(1.0f, 1.0f, 1.0f);
       mb.get_mesh(ring);
 
       glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -96,9 +96,9 @@ namespace octet {
 
       renderSky();
 
-      renderCD();
+      //renderCube();
       
-      //renderCone();
+      renderCD();
      
       rotateAngle += 1.0f;
 
@@ -210,7 +210,7 @@ namespace octet {
       glDisableVertexAttribArray(attribute_pos);
     }
 
-    void renderCD() {
+    void renderCube() {
       glEnable(GL_TEXTURE_CUBE_MAP);
       glEnable(GL_DEPTH_TEST);
 
@@ -289,8 +289,12 @@ namespace octet {
       glDisableVertexAttribArray(attribute_tangent);
     }
 
-    void renderCone() {
+    void renderCD() {
+      glEnable(GL_TEXTURE_CUBE_MAP);
       glEnable(GL_DEPTH_TEST);
+
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
       cameraToWorld.loadIdentity();
       cameraToWorld.rotate(camera_rotation[1], 0.0f, 1.0f, 0.0f);
@@ -301,13 +305,17 @@ namespace octet {
       modelToWorld.rotate(rotateAngle, 0.0f, 1.0f, 0.0f);
 
       mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
+      mat4t modelToWorldIT = modelToWorld.inverse4x4().transpose4x4();
 
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+      vec3 cameraPositionNormalized = camera_position.normalize();
 
-      cshader.render(modelToProjection, vec4(0.5f, 0.4f, 0.1f, 1.0f));
+      glActiveTexture(GL_TEXTURE0);
+      glEnable(GL_TEXTURE_CUBE_MAP);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTex);
+      
+      cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+
       ring.render();
-
     }
      
   };
