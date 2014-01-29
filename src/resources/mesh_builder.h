@@ -44,26 +44,7 @@ namespace octet {
       indices.push_back(cur_vertex+3);
     }
 
-    // add a ring in the x-y plane. Return index of first index
     // modified add_ring in order to include tangent
-    // the below function is just a mock-up till I get everything working
- /*   unsigned add_ring(float radius, const vec4 &normal, vec3 tangent, unsigned num_vertices, float v, float uvscale) {
-      float rnv = 1.0f / num_vertices;
-      float angle = 3.1415926536f * 2 * rnv;
-      float delta_c = cosf(angle), delta_s = sinf(angle);
-      mat4t save_matrix = matrix;
-      unsigned first_index = (unsigned)vertices.size();
-      float u = 0;
-      for (unsigned i = 0; i <= num_vertices; ++i) {
-        add_vertex(vec4(radius, 0, 0, 1), normal, u, v);
-        matrix.rotateSpecial(delta_c, delta_s, 0, 1);
-        u += rnv * uvscale;
-      }
-      matrix = save_matrix;
-      return first_index;
-    }
-    */
-
     // add a ring in the x-y plane. Return index of first index
     unsigned add_ring(float radius, const vec4 &normal, unsigned num_vertices, float v, float uvscale) {
       float rnv = 1.0f / num_vertices;
