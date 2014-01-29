@@ -11,7 +11,7 @@
 
 namespace octet {
   class mesh_builder {
-    struct vertex { float pos[3]; float normal[3]; float uv[2]; };
+    struct vertex { float pos[3]; float normal[3]; float tangent[3]; float uv[2]; };
     dynarray<vertex, allocator> vertices;
     dynarray<unsigned short, allocator> indices;
 
@@ -65,7 +65,7 @@ namespace octet {
     */
 
     // add a ring in the x-y plane. Return index of first index
-    unsigned add_ring(float radius, const vec4 &normal, vec3 tangent, unsigned num_vertices, float v, float uvscale) {
+    unsigned add_ring(float radius, const vec4 &normal, unsigned num_vertices, float v, float uvscale) {
       float rnv = 1.0f / num_vertices;
       float angle = 3.1415926536f * 2 * rnv;
       float delta_c = cosf(angle), delta_s = sinf(angle);
@@ -73,7 +73,7 @@ namespace octet {
       unsigned first_index = (unsigned)vertices.size();
       float u = 0;
       for (unsigned i = 0; i <= num_vertices; ++i) {
-        add_vertex(vec4(radius, 0, 0, 1), normal, u, v);
+        add_vertex(vec4(radius, 0, 0, 1), normal, tangent, u, v);
         matrix.rotateSpecial(delta_c, delta_s, 0, 1);
         u += rnv * uvscale;
       }
@@ -143,10 +143,11 @@ namespace octet {
     }
 
     // add one vertex to the model
-    unsigned add_vertex(const vec4 &pos, const vec4 &normal, float u, float v) {
+    unsigned add_vertex(const vec4 &pos, const vec4 &normal, const vec4 &tangent, float u, float v) {
       vec4 tpos = pos * matrix;
       vec4 tnormal = normal * matrix;
-      vertex vtx = { tpos[0], tpos[1], tpos[2], tnormal[0], tnormal[1], tnormal[2], u, v };
+      vec4 ttangent = tangent * matrix;
+      vertex vtx = { tpos[0], tpos[1], tpos[2], tnormal[0], tnormal[1], tnormal[2], ttangent[0], ttangent[1], ttangent[2], u, v };
       unsigned result = (unsigned)vertices.size();
       vertices.push_back(vtx);
       return result;

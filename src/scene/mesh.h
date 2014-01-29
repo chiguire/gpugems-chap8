@@ -15,7 +15,7 @@ namespace octet {
     struct vertex {
       vec3p pos;
       vec3p normal;
-      vec3 tangent;
+      vec3p tangent;
       vec2p uv;
     };
   private:
@@ -57,7 +57,7 @@ namespace octet {
         edge = tri_idx+1;
       } else if (upper == 0) {
         // second triangle
-        edge = ((uint64_t)upper << 32) | (tri_idx+1);
+        a = ((uint64_t)upper << 32) | (tri_idx+1);
       } else {
         // three triangles join here... ignore.
       }
