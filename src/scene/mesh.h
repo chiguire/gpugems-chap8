@@ -57,7 +57,7 @@ namespace octet {
         edge = tri_idx+1;
       } else if (upper == 0) {
         // second triangle
-        a = ((uint64_t)upper << 32) | (tri_idx+1);
+        edge = ((uint64_t)upper << 32) | (tri_idx+1);
       } else {
         // three triangles join here... ignore.
       }
