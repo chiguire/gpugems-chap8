@@ -34,8 +34,9 @@ namespace octet {
       // it inputs pos and uv from each corner
       // it outputs gl_Position and uv_ to the rasterizer
       const char vertex_shader[] = SHADER_STR(
-        varying vec4 color_;
+        varying vec3 position_;
         varying vec3 normal_;
+        varying vec3 tangent_;
 
         attribute vec4 pos;
         attribute vec3 normal;
@@ -45,42 +46,11 @@ namespace octet {
         uniform mat4 modelToWorld;
         uniform mat3 modelToWorldIT;
 
-        uniform float r;
-        uniform float d;
-        uniform vec4 hiliteColor;
-        uniform vec3 lightPosition;
-        uniform vec3 cameraPosition;
-
-        vec3 blend3(vec3 x){
-          vec3 y = 1.0 - x*x;
-          y = max(y, vec3(0, 0, 0));
-          return (y);
-        }
-
         void main() {
-          vec3 P = (modelToWorld * pos).xyz;
-          vec3 L = normalize(lightPosition - P);
-          vec3 V = normalize(cameraPosition - P);
-          vec3 H = L + V;
-          vec3 N = modelToWorldIT * normal;
-          vec3 T = modelToWorldIT * tangent;
-          float u = dot(T, H) * d;
-          float w = dot(N, H);
-          float e = r * u / w;
-          float c = exp(-e * e);
-          vec4 anis = hiliteColor * vec4(c, c, c, 1.0);
-
-          if (u < 0.0) u = -u;
-
-          vec4 cdiff = vec4(0.0, 0.0, 0.0, 1.0);
-
-          for (int n = 1; n < 8; n++) {
-            float y = 2.0 * u / float(n) - 1.0;
-            cdiff.xyz += blend3(vec3(4.0 * (y - 0.75), 4.0 * (y - 0.5), 4.0 * (y - 0.25)));
-          }
           gl_Position = modelToProjection * pos; 
-          color_ = cdiff + anis;
-          normal_ = (modelToWorld * vec4(normal, 1)).xyz;
+          position_ = gl_Position.xyz;
+          normal_ = (modelToWorldIT * normal);
+          tangent_ = (modelToWorldIT * tangent);
         }
       );
 
@@ -89,12 +59,54 @@ namespace octet {
       // this is called for every fragment
       // it outputs gl_FragColor, the color of the pixel and inputs uv_
       const char fragment_shader[] = SHADER_STR(
-        varying vec4 color_;
+        varying vec3 position_;
+        varying vec3 normal_;
+        varying vec3 tangent_;
 
         uniform samplerCube sampler;
+        
+        uniform mat4 modelToProjection;
+        uniform mat4 modelToWorld;
+        uniform mat3 modelToWorldIT;
+
+        uniform float r;
+        uniform float d;
+        uniform vec4 hiliteColor;
+        uniform vec3 lightPosition;
+        uniform vec3 cameraPosition;
+        
+        vec3 blend3(vec3 x){
+          vec3 y = 1.0 - x*x;
+          y = max(y, vec3(0, 0, 0));
+          return (y);
+        }
 
         void main() {
-          gl_FragColor = color_; //textureCube(sampler, normal_);
+          vec4 leColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+          vec3 P = position_;
+          vec3 L = normalize(lightPosition - P);
+          vec3 V = normalize(cameraPosition - P);
+          vec3 H = L + V;
+          vec3 N = normal_;
+          vec3 T = tangent_;
+          float u = dot(T, H) * d;
+          float w = dot(N, H);
+          float e = r * u / w;
+          float c = exp(-e * e);
+          vec4 anis = hiliteColor * vec4(c, c, c, 1.0);
+          
+          if (u < 0.0) u = -u;
+
+          vec4 cdiff = vec4(0.0, 0.0, 0.0, 1.0);
+
+          for (int n = 1; n < 8; n++) {
+            float y = 2.0 * u / float(n) - 1.0;
+            cdiff.xyz += blend3(vec3(4.0 * (y - 0.75), 4.0 * (y - 0.5), 4.0 * (y - 0.25)));
+          }
+
+          gl_FragColor = cdiff + anis;
+          //textureCube(sampler, normal_);
         }
       );
     

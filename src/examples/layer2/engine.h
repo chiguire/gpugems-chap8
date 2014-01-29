@@ -31,7 +31,7 @@ namespace octet {
     GLuint cubeMapTex;
     GLuint leMapTex;
 
-    cubemap_diffraction_shader cubeMapDiffractionShader;
+    cubemap_fragdiffraction_shader cubeMapDiffractionShader;
     //cubemap_reflection_shader cubeMapReflectionShader;
     cubemap_sky_shader cubeMapSkyShader;
 
