@@ -50,13 +50,14 @@ namespace octet {
     //mouse_ball ball;
 
     GLuint cubeMapTex;
-    GLuint leMapTex;
+    GLuint helpTex;
 
     cubemap_fragdiffraction_shader cubeMapDiffractionShader;
     cubemap_diffraction_shader cubeMapVertexDifractionShader;
     cubemap_sky_shader cubeMapSkyShader;
-
+    texture_shader tShader;
     color_shader cshader;
+
     mesh ring;
     mesh ring_normals;
     mesh ring_tangents;
@@ -79,6 +80,7 @@ namespace octet {
       cubeMapVertexDifractionShader.init();
       cubeMapSkyShader.init();
       cshader.init();
+      tShader.init();
 
       cameraToWorld.loadIdentity();
       modelToWorld.loadIdentity();
@@ -124,7 +126,9 @@ namespace octet {
         "assets/cubemaps/Tenerife4/posx.jpg", "assets/cubemaps/Tenerife4/posy.jpg", "assets/cubemaps/Tenerife4/posz.jpg",
         "assets/cubemaps/Tenerife4/negx.jpg", "assets/cubemaps/Tenerife4/negy.jpg", "assets/cubemaps/Tenerife4/negz.jpg");
 
-      printf("Cube map tex: %d\n", cubeMapTex);
+      helpTex = resources::get_texture_handle(GL_RGBA, "assets/help.gif");
+
+      //printf("Cube map tex: %d\n", cubeMapTex);
     }
 
     // this is called to draw the world
@@ -145,8 +149,9 @@ namespace octet {
       } else {
         renderCube();
       }
+
+      renderHelp();
       
-     
       if (rotating) rotateAngle += 1.0f;
 
       if (is_key_down('W')) {
@@ -349,16 +354,16 @@ namespace octet {
       mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
       mat4t modelToWorldIT = modelToWorld.inverse4x4().transpose4x4();
 
-      vec3 cameraPositionNormalized = camera_position.normalize();
+      vec3 cameraPos = vec4(0.0f, 0.0f, 0.0f, 1.0f)*cameraToWorld;
 
       glActiveTexture(GL_TEXTURE0);
       glEnable(GL_TEXTURE_CUBE_MAP);
       glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTex);
       
       if (is_frag_shader_mode) {
-        cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+        cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPos, 0);
       } else {
-        cubeMapVertexDifractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+        cubeMapVertexDifractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPos, 0);
       }
 
       float vertices[] = {
@@ -425,22 +430,22 @@ namespace octet {
       cameraToWorld.rotate(camera_rotation[0], 1.0f, 0.0f, 0.0f);
       cameraToWorld.translate(camera_position.x(), camera_position.y(), camera_position.z());
       
+      vec3 cameraPos = vec4(0.0f, 0.0f, 0.0f, 1.0f)*cameraToWorld;
+       
       modelToWorld.loadIdentity();
       modelToWorld.rotate(rotateAngle, 0.0f, 1.0f, 0.0f);
 
       mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
       mat4t modelToWorldIT = modelToWorld.inverse4x4().transpose4x4();
 
-      vec3 cameraPositionNormalized = camera_position.normalize();
-
       glActiveTexture(GL_TEXTURE0);
       glEnable(GL_TEXTURE_CUBE_MAP);
       glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTex);
       
       if (is_frag_shader_mode) {
-        cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+        cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPos, 0);
       } else {
-        cubeMapVertexDifractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+        cubeMapVertexDifractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPos, 0);
       }
 
       ring.render();
@@ -456,5 +461,47 @@ namespace octet {
       }
     }
      
+    void renderHelp() {
+      glDisable(GL_DEPTH_TEST);
+
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+      mat4t help_text_matrix;
+      help_text_matrix.loadIdentity();
+
+      mat4t help_cam_matrix;
+      help_cam_matrix.loadIdentity();
+
+      mat4t modelToProjection = mat4t::build_projection_matrix(help_text_matrix, help_cam_matrix);
+      
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+      tShader.render(modelToProjection, 0);
+
+      glActiveTexture(GL_TEXTURE0);
+      glDisable(GL_TEXTURE_CUBE_MAP);
+      glEnable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D, helpTex);
+      
+      float vertices[] = {
+        -0.9f,  -0.9f, -1.0f, 0.0f, 0.0f,
+        0.9f,  -0.9f,  -1.0f, 1.0f, 0.0f,
+        0.9f, -0.6f,  -1.0f, 1.0f, 1.0f,
+        -0.9f, -0.6f, -1.0f, 0.0f, 1.0f
+      };
+
+      glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), vertices);
+      glVertexAttribPointer(attribute_uv, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), vertices+3);
+
+      glEnableVertexAttribArray(attribute_pos);
+      glEnableVertexAttribArray(attribute_uv);
+
+      glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+      glDisableVertexAttribArray(attribute_pos);
+      glDisableVertexAttribArray(attribute_uv);
+    }
   };
 }
