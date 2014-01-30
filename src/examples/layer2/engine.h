@@ -28,6 +28,11 @@ namespace octet {
     bool rotating;
     bool just_press_rotating;
 
+    bool is_frag_shader_mode;
+    bool just_press_frag_shader_mode;
+
+    bool just_press_dump_info;
+
     enum model {
       MODEL_CD,
       MODEL_CUBE
@@ -42,6 +47,7 @@ namespace octet {
     GLuint leMapTex;
 
     cubemap_fragdiffraction_shader cubeMapDiffractionShader;
+    cubemap_diffraction_shader cubeMapVertexDifractionShader;
     cubemap_sky_shader cubeMapSkyShader;
 
     color_shader cshader;
@@ -62,7 +68,7 @@ namespace octet {
     void app_init() {
       // set up the shaders
       cubeMapDiffractionShader.init();
-      //cubeMapReflectionShader.init();
+      cubeMapVertexDifractionShader.init();
       cubeMapSkyShader.init();
       cshader.init();
 
@@ -74,8 +80,13 @@ namespace octet {
       rotating = true;
       just_press_rotating = false;
 
+      is_frag_shader_mode = true;
+      just_press_frag_shader_mode = false;
+
       current_model = MODEL_CD;
       just_press_change_model = false;
+
+      just_press_dump_info = false;
 
       lightPosition = vec3(0.0f, 0.0f, 1.0f);
       hiliteColor = vec4(1.0f, 0.7f, 0.3f, 1.0f);
@@ -173,7 +184,8 @@ namespace octet {
       if (is_key_down(key_space) && !just_press_rotating) {
         rotating = !rotating;
         just_press_rotating = true;
-      } else {
+      }
+      if (!is_key_down(key_space)) {
         just_press_rotating = false;
       }
 
@@ -181,14 +193,38 @@ namespace octet {
         printf("Change model to %s.\n", current_model == MODEL_CD? "cube": "cd");
         current_model = current_model == MODEL_CD? MODEL_CUBE: MODEL_CD;
         just_press_change_model = true;
-      } else {
+      }
+      if (!is_key_down('B')) {
         just_press_change_model = false;
+      }
+
+      if (is_key_down('N') && !just_press_change_model) {
+        printf("Change shader to %s.\n", is_frag_shader_mode? "vertex-based": "fragment-based");
+        is_frag_shader_mode = !is_frag_shader_mode;
+        just_press_frag_shader_mode = true;
+      }
+      if (!is_key_down('N')) {
+        just_press_frag_shader_mode = false;
+      }
+
+      if (is_key_down('M') && !just_press_dump_info) {
+        printf("Current shader is %s.\n", is_frag_shader_mode? "fragment-based": "vertex-based");
+        printf("Current model is %s.\n", current_model == MODEL_CD? "CD": "cube");
+        printf("Rough: %.2f.\n", rough);
+        printf("Spacing: %.2f.\n", spacing);
+        printf("Light position: (%.2f, %2.f, %.2f)\n", lightPosition[0], lightPosition[1], lightPosition[2]);
+        printf("Hilite color: (%.2f, %.2f, %.2f, %.2f)\n", hiliteColor[0], hiliteColor[1], hiliteColor[2], hiliteColor[3]);
+        printf("Camera position: (%.2f, %.2f, %.2f), Rotation: (%.2f, %.2f, %.2f)\n\n", camera_position[0], camera_position[1], camera_position[2], camera_rotation[0], camera_rotation[1], camera_rotation[2]);
+        just_press_dump_info = true;
+      }
+      if (!is_key_down('N')) {
+        just_press_dump_info = false;
       }
     }
 
     void renderSky() {
       glDisable(GL_DEPTH_TEST);
-
+      glDepthMask(false);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -254,6 +290,7 @@ namespace octet {
       glDrawArrays(GL_TRIANGLE_FAN, 20, 4);
 
       glDisableVertexAttribArray(attribute_pos);
+      glDepthMask(true);
     }
 
     void renderCube() {
@@ -280,7 +317,11 @@ namespace octet {
       glEnable(GL_TEXTURE_CUBE_MAP);
       glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTex);
       
-      cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+      if (is_frag_shader_mode) {
+        cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+      } else {
+        cubeMapVertexDifractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+      }
 
       float vertices[] = {
         1.0f,  1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
@@ -358,7 +399,11 @@ namespace octet {
       glEnable(GL_TEXTURE_CUBE_MAP);
       glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTex);
       
-      cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+      if (is_frag_shader_mode) {
+        cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+      } else {
+        cubeMapVertexDifractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
+      }
 
       ring.render();
     }

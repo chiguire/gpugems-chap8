@@ -109,11 +109,11 @@ namespace octet {
             cdiff.xyz += blend3(vec3(4.0 * (y - 0.75), 4.0 * (y - 0.5), 4.0 * (y - 0.25)));
           }
 
-          //float base = 1.0 - w;
-          //float exp = pow(base, 5.0);
-	        //float fresnel = fresnelZero+(1.0-fresnelZero)*exp;
+          float base = 1.0 - w;
+          float exp = pow(base, 5.0);
+	        float fresnel = fresnelZero+(1.0-fresnelZero)*exp;
 
-          vec4 cubemapColor = textureCube(sampler, reflect(P, N));
+          vec4 cubemapColor = textureCube(sampler, reflect(vec3(V.x, -V.y, V.z), -N));
 
           //gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.8*fresnel*cubemapColor.xyz, 1.0) + 0.8*cdiff + anis;
           gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.3*cubemapColor.xyz, 1.0) + 0.8*cdiff + anis;
@@ -254,11 +254,13 @@ namespace octet {
       // it outputs gl_FragColor, the color of the pixel and inputs uv_
       const char fragment_shader[] = SHADER_STR(
         varying vec4 color_;
+        varying vec3 normal_;
 
         uniform samplerCube sampler;
 
         void main() {
-          gl_FragColor = color_; //textureCube(sampler, normal_);
+          vec4 cubemapColor = textureCube(sampler, normal_);
+          gl_FragColor = cubemapColor + color_; //textureCube(sampler, normal_);
         }
       );
     

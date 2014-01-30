@@ -198,9 +198,6 @@ namespace octet {
     //Add a CD for the difraction
     void add_one_CD(float inner_radius, float outer_radius, float v, float uvscale) {
       unsigned short num_vertices = 30;
-      //unsigned short center_vertex = (unsigned short)vertices.size();
-      //add_vertex(vec4(0, 0, 0, 1), vec4(0, 0, 1, 1), vec4(0, 1, 0, 1), 0, 0);
-
 
       unsigned short inner_vertex = (unsigned short)vertices.size();
       add_ring(inner_radius, vec4(0, 0, 1, 1), vec4(0, 1, 0, 1), num_vertices, v, uvscale);
@@ -221,7 +218,7 @@ namespace octet {
       }
 
       matrix.rotateY180();
-      translate(0.0f, 0.0f, 0.01f);
+      translate(0.0f, 0.0f, -0.01f);
       
       inner_vertex = (unsigned short)vertices.size();
       add_ring(inner_radius, vec4(0, 0, 1, 1), vec4(0, -1, 0, 1), num_vertices, v, uvscale);
