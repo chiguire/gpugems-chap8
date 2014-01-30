@@ -376,8 +376,8 @@ namespace octet {
         varying vec3 uv_;
 
         void main() {
-          uv_ = vec3(pos.x, -pos.yz);
-          gl_Position = modelToProjection * normalize(vec4(pos.xyz + cameraPosition, 1.0)); 
+          uv_ = pos.xyz;
+          gl_Position = modelToProjection * normalize(vec4(pos.xyz + cameraPosition.xyz, 1.0)); 
         }
       );
 

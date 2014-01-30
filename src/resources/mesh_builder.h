@@ -210,7 +210,7 @@ namespace octet {
         indices.push_back(cur_vertex+1+i);
         indices.push_back(cur_vertex+1+((i+1)%(num_vertices+1)));
 
-        printf("Adding indices (%d, %d, %d)\n", cur_vertex+0, cur_vertex+1+i, cur_vertex+1+((i+1)%(num_vertices+1)));
+        //printf("Adding indices (%d, %d, %d)\n", cur_vertex+0, cur_vertex+1+i, cur_vertex+1+((i+1)%(num_vertices+1)));
       }
     }
 

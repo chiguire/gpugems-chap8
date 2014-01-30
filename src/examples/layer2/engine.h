@@ -77,8 +77,8 @@ namespace octet {
       rotateAngle = 0;
 
       cubeMapTex = resources::get_cubemap_texture_handle(GL_RGBA, "Tenerife4",
-        "assets/cubemaps/Tenerife4/posx.jpg", "assets/cubemaps/Tenerife4/negy.jpg", "assets/cubemaps/Tenerife4/posz.jpg",
-        "assets/cubemaps/Tenerife4/negx.jpg", "assets/cubemaps/Tenerife4/posy.jpg", "assets/cubemaps/Tenerife4/negz.jpg");
+        "assets/cubemaps/Tenerife4/posx.jpg", "assets/cubemaps/Tenerife4/posy.jpg", "assets/cubemaps/Tenerife4/posz.jpg",
+        "assets/cubemaps/Tenerife4/negx.jpg", "assets/cubemaps/Tenerife4/negy.jpg", "assets/cubemaps/Tenerife4/negz.jpg");
 
       printf("Cube map tex: %d\n", cubeMapTex);
     }
@@ -174,22 +174,27 @@ namespace octet {
         1.0f, -1.0f,  1.0f,
         1.0f,  1.0f,  1.0f,
         1.0f,  1.0f, -1.0f,
+
         -1.0f, -1.0f,  1.0f,
         -1.0f, -1.0f, -1.0f,
         -1.0f,  1.0f, -1.0f,
         -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-        1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
+        
+        -1.0f,  -1.0f, -1.0f,
+        1.0f,  -1.0f, -1.0f,
+        1.0f,  -1.0f,  1.0f,
+        -1.0f,  -1.0f,  1.0f,
+
+        -1.0f, 1.0f,  1.0f,
+        1.0f, 1.0f,  1.0f,
+        1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+
+        1.0f, -1.0f,  1.0f,        
         -1.0f, -1.0f,  1.0f,
-        1.0f, -1.0f,  1.0f,
-        1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
         -1.0f,  1.0f,  1.0f,
         1.0f,  1.0f,  1.0f,
+
         -1.0f, -1.0f, -1.0f,
         1.0f, -1.0f, -1.0f,
         1.0f,  1.0f, -1.0f,
