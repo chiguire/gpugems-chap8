@@ -44,11 +44,17 @@ Basically light behaves as a wave and the ray theory of light used in computer g
 
 #### The Physics of Diffraction
 
-The simple diffraction shader provided by nVidia models the reflection of light from a surface commonly known as a diffraction grating. A diffraction grating is composed of a set of parallel, narrow reflecting bands separated by a distance. 
+The diffraction shader provided by nVidia models the reflection of light from a surface commonly known as a diffraction grating. A diffraction grating is composed of a set of parallel, narrow reflecting bands separated by a distance. 
 
-A light wave emanating from a light source is usually approximated by a planar wave. A cross section of this wave is depicted by drawing the lines that correspond to the crests of the wave. Unlike a simple, one-dimensional wave, a planar wave requires a specified direction, in addition to its wavelength and amplitude. When this type of planar wave hits the diffraction grating, it generates a spherical wave at each band. The wavelength of the spherical waves is the same as that of the incoming planar, and their crests are depicted similarly. The only difference is that the crests lie on concentric circles instead of parallel lines. The reflected wave at any receiving point away from the surface is equal to the sum of the spherical waves at that location.
+A light wave emanating from a light source is approximated by a planar wave. A cross section of this wave is exemplified by drawing the lines that correspond to the crests of the wave. Unlike a one-dimensional wave, a planar wave requires a specified direction, besides its wavelength and amplitude. When this type of planar wave hits the diffraction grating, it generates a spherical wave at each band. The wavelength of the spherical waves is the same as that of the incoming planar, and their crests are depicted similarly. The only difference is that the crests lie on concentric circles instead of parallel lines. The reflected wave at any receiving point away from the surface is equal to the sum of the spherical waves at that location.
 
-The main difference between the wave theory and the usual ray theory is that the amplitudes do not simply add up. Waves interfere. We illustrate this phenomenon in Figure 8-3, where we show two extreme cases. In the first case (a), the two waves are "in phase" and the amplitudes add up, as in the ray theory. In the second case (b), the waves cancel each other, resulting in a wave of zero amplitude. These two cases illustrate that waves can interfere both positively and negatively. In general, the resulting wave lies somewhere in between these two extremes. The first case is, however, the one we are most interested in: When waves interfere in phase, they produce the maximum possible intensity, which eventually will be observed at the receiver.
+The main difference between the wave theory and the usual ray theory is that the amplitudes do not simply add up. Waves interfere. 
+
+This is perfectly illustrated in GPU Gems as cited below:
+
+“We illustrate this phenomenon in Figure 8-3, where we show two extreme cases. In the first case (a), the two waves are "in phase" and the amplitudes add up, as in the ray theory. In the second case (b), the waves cancel each other, resulting in a wave of zero amplitude. These two cases illustrate that waves can interfere both positively and negatively. In general, the resulting wave lies somewhere in between these two extremes. The first case is, however, the one we are most interested in: When waves interfere in phase, they produce the maximum possible intensity, which eventually will be observed at the receiver.”
+
+Image: http://http.developer.nvidia.com/GPUGems/elementLinks/fig08-02.jpg
 
 ### Original Implementation
 
@@ -66,6 +72,9 @@ The original shader was written in 2004, a moment where most heavy calculations 
 
 The differences are remarkable using low-poly objects (see figures X and Y). In higher-poly objects the differences are appreciable/not appreciable/nosabenoresponde.
 
+
+
+
 ## Tangent Vectors for the Compact Disc
 
 In order to make the implementation work for a CD, we needed to specify the tangent vector, normal and position for each vertex. The tangent vector provides the direction of the tracks. After including the tangent in the mesh, we modified the mesh_builder in order add the tangent in the add_ring() and add_vertex() functions. Now, to have a complete mesh, we needed to have a public function that adds a vertex in the center, then calls add_ring(), and the joins the vertices with the indices. After this we obtained the result exemplified in the following figure (Diffraction 4).
@@ -79,3 +88,4 @@ In order to make the implementation work for a CD, we needed to specify the tang
 ![Diffraction4](diffraction4.jpg "Diffraction screenshot example – Displaying the tangents")
 
 ## References
+http://www.nvidia.com/object/gpu_gems_cd.html
