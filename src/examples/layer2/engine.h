@@ -24,6 +24,16 @@ namespace octet {
     float spacing;
     vec4 hiliteColor;
     vec3 lightPosition;
+    
+    bool rotating;
+    bool just_press_rotating;
+
+    enum model {
+      MODEL_CD,
+      MODEL_CUBE
+    };
+    model current_model;
+    bool just_press_change_model;
 
     // helper to rotate camera about scene
     //mouse_ball ball;
@@ -32,7 +42,6 @@ namespace octet {
     GLuint leMapTex;
 
     cubemap_fragdiffraction_shader cubeMapDiffractionShader;
-    //cubemap_reflection_shader cubeMapReflectionShader;
     cubemap_sky_shader cubeMapSkyShader;
 
     color_shader cshader;
@@ -62,13 +71,17 @@ namespace octet {
 
       rough = 50.0f;
       spacing = 10.0f;
+      rotating = true;
+      just_press_rotating = false;
+
+      current_model = MODEL_CD;
+      just_press_change_model = false;
+
       lightPosition = vec3(0.0f, 0.0f, 1.0f);
       hiliteColor = vec4(1.0f, 0.7f, 0.3f, 1.0f);
 
-      vec4 ring_normal = vec4(0.0f, 1.0f, 0.0f, 1.0f);
-
       mesh_builder mb;
-      mb.add_one_CD(1.0f, 1.0f, 1.0f);
+      mb.add_one_CD(0.3f, 2.0f, 1.0f, 1.0f);
       mb.get_mesh(ring);
 
       glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -96,11 +109,14 @@ namespace octet {
 
       renderSky();
 
-      //renderCube();
+      if (current_model == MODEL_CD) {
+        renderCD();
+      } else {
+        renderCube();
+      }
       
-      renderCD();
      
-      rotateAngle += 1.0f;
+      if (rotating) rotateAngle += 1.0f;
 
       if (is_key_down('W')) {
         camera_position[1] += 0.25f * (camera_position[2]/5.0f);
@@ -138,11 +154,36 @@ namespace octet {
         if (camera_rotation[0] > 60.0f) camera_rotation[0] = 60.0f;
       }
 
-      /*if (is_key_down('R')) {
-        camera_rotation -= 1.0f;
-      } else if (is_key_down('T')) {
-        camera_rotation += 1.0f;
-      }*/
+      if (is_key_down('Z')) {
+        rough -= 1.0f;
+        if (rough < 1.0f) rough = 1.0f;
+      } else if (is_key_down('X')) {
+        rough += 1.0f;
+        if (rough > 500.0f) rough = 500.0f;
+      }
+
+      if (is_key_down('C')) {
+        spacing -= 1.0f;
+        if (spacing < 1.0f) spacing = 1.0f;
+      } else if (is_key_down('V')) {
+        spacing += 1.0f;
+        if (spacing > 500.0f) spacing = 500.0f;
+      }
+
+      if (is_key_down(key_space) && !just_press_rotating) {
+        rotating = !rotating;
+        just_press_rotating = true;
+      } else {
+        just_press_rotating = false;
+      }
+
+      if (is_key_down('B') && !just_press_change_model) {
+        printf("Change model to %s.\n", current_model == MODEL_CD? "cube": "cd");
+        current_model = current_model == MODEL_CD? MODEL_CUBE: MODEL_CD;
+        just_press_change_model = true;
+      } else {
+        just_press_change_model = false;
+      }
     }
 
     void renderSky() {
@@ -240,7 +281,6 @@ namespace octet {
       glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTex);
       
       cubeMapDiffractionShader.render(modelToProjection, modelToWorld, modelToWorldIT, rough, spacing, hiliteColor, lightPosition, cameraPositionNormalized, 0);
-      //cubeMapReflectionShader.render(&modelToProjection, &modelToWorld, 0);
 
       float vertices[] = {
         1.0f,  1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f,

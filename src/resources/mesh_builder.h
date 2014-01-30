@@ -196,19 +196,47 @@ namespace octet {
 
     }
     //Add a CD for the difraction
-    void add_one_CD(float radius, float v, float uvscale) {
-      unsigned short cur_vertex = (unsigned short)vertices.size();
+    void add_one_CD(float inner_radius, float outer_radius, float v, float uvscale) {
       unsigned short num_vertices = 30;
-      //dd_vertex(vec4(-radius, -radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 0, 0);
-      //add_vertex(vec4(-radius,  radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 0, 1);
-      //add_vertex(vec4( radius,  radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 1, 1);
-      //add_vertex(vec4( radius, -radius, radius, 1), vec4(0, 0, 1, 0), vec4(0, 0, 1, 0), 1, 0);
-      add_vertex(vec4(0, 0, 0, 1), vec4(0, 0, 1, 1), vec4(0, 1, 0, 1), 0, 0);
-      add_ring(radius, vec4(0, 0, 1, 1), vec4(0, 1, 0, 1), num_vertices, v, uvscale);
+      //unsigned short center_vertex = (unsigned short)vertices.size();
+      //add_vertex(vec4(0, 0, 0, 1), vec4(0, 0, 1, 1), vec4(0, 1, 0, 1), 0, 0);
+
+
+      unsigned short inner_vertex = (unsigned short)vertices.size();
+      add_ring(inner_radius, vec4(0, 0, 1, 1), vec4(0, 1, 0, 1), num_vertices, v, uvscale);
+
+      unsigned short outer_vertex = (unsigned short)vertices.size();
+      add_ring(outer_radius, vec4(0, 0, 1, 1), vec4(0, 1, 0, 1), num_vertices, v, uvscale);
+
       for (int i = 0; i != num_vertices+1; i++) {
-        indices.push_back(cur_vertex+0);
-        indices.push_back(cur_vertex+1+i);
-        indices.push_back(cur_vertex+1+((i+1)%(num_vertices+1)));
+        indices.push_back(inner_vertex+i);
+        indices.push_back(inner_vertex+((i+1)%(num_vertices+1)));
+        indices.push_back(outer_vertex+i);
+
+        indices.push_back(inner_vertex+((i+1)%(num_vertices+1)));
+        indices.push_back(outer_vertex+((i+1)%(num_vertices+1)));
+        indices.push_back(outer_vertex+i);
+
+        //printf("Adding indices (%d, %d, %d)\n", cur_vertex+0, cur_vertex+1+i, cur_vertex+1+((i+1)%(num_vertices+1)));
+      }
+
+      matrix.rotateY180();
+      translate(0.0f, 0.0f, 0.01f);
+      
+      inner_vertex = (unsigned short)vertices.size();
+      add_ring(inner_radius, vec4(0, 0, 1, 1), vec4(0, -1, 0, 1), num_vertices, v, uvscale);
+
+      outer_vertex = (unsigned short)vertices.size();
+      add_ring(outer_radius, vec4(0, 0, 1, 1), vec4(0, -1, 0, 1), num_vertices, v, uvscale);
+
+      for (int i = 0; i != num_vertices+1; i++) {
+        indices.push_back(inner_vertex+i);
+        indices.push_back(inner_vertex+((i+1)%(num_vertices+1)));
+        indices.push_back(outer_vertex+i);
+
+        indices.push_back(inner_vertex+((i+1)%(num_vertices+1)));
+        indices.push_back(outer_vertex+((i+1)%(num_vertices+1)));
+        indices.push_back(outer_vertex+i);
 
         //printf("Adding indices (%d, %d, %d)\n", cur_vertex+0, cur_vertex+1+i, cur_vertex+1+((i+1)%(num_vertices+1)));
       }

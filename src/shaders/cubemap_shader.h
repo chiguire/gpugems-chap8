@@ -23,6 +23,9 @@ namespace octet {
     GLuint hiliteColorIndex_;
     GLuint lightPositionIndex_;
     GLuint cameraPositionIndex_;
+    GLuint fresnelZeroIndex_;
+
+    GLfloat fresnelZeroConstant;
 
     // index for texture sampler
     GLuint samplerIndex_;
@@ -74,6 +77,7 @@ namespace octet {
         uniform vec4 hiliteColor;
         uniform vec3 lightPosition;
         uniform vec3 cameraPosition;
+        uniform float fresnelZero;
         
         vec3 blend3(vec3 x){
           vec3 y = 1.0 - x*x;
@@ -105,10 +109,14 @@ namespace octet {
             cdiff.xyz += blend3(vec3(4.0 * (y - 0.75), 4.0 * (y - 0.5), 4.0 * (y - 0.25)));
           }
 
-          vec4 cubemapColor = textureCube(sampler, normalize(position_));
+          //float base = 1.0 - w;
+          //float exp = pow(base, 5.0);
+	        //float fresnel = fresnelZero+(1.0-fresnelZero)*exp;
 
-          gl_FragColor = cubemapColor + cdiff + anis;
-          //textureCube(sampler, normal_);
+          vec4 cubemapColor = textureCube(sampler, reflect(P, N));
+
+          //gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.8*fresnel*cubemapColor.xyz, 1.0) + 0.8*cdiff + anis;
+          gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.3*cubemapColor.xyz, 1.0) + 0.8*cdiff + anis;
         }
       );
     
@@ -125,8 +133,12 @@ namespace octet {
       hiliteColorIndex_ = glGetUniformLocation(program(), "hiliteColor");
       lightPositionIndex_ = glGetUniformLocation(program(), "lightPosition");
       cameraPositionIndex_ = glGetUniformLocation(program(), "cameraPosition");
+      fresnelZeroIndex_ = glGetUniformLocation(program(), "fresnelZero");
 
       samplerIndex_ = glGetUniformLocation(program(), "sampler");
+
+      fresnelZeroConstant = pow((1.0f-(1.0f/1.31f)), 2)/pow((1.0f+(1.0f/1.31f)), 2);
+      printf("Fresnel constant: %.4f\n", fresnelZeroConstant);
     }
 
     void render(const mat4t &modelToProjection, const mat4t &modelToWorld, mat4t &modelToWorldIT, 
@@ -154,6 +166,7 @@ namespace octet {
       glUniform4fv(hiliteColorIndex_, 1, hiliteColor.get());
       glUniform3fv(lightPositionIndex_, 1, lightPosition.get());
       glUniform3fv(cameraPositionIndex_, 1, cameraPosition.get());
+      glUniform1f(fresnelZeroIndex_, fresnelZeroConstant);
       glUniform1i(samplerIndex_, sampler);
     }
   };
