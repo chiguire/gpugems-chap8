@@ -23,9 +23,6 @@ namespace octet {
     GLuint hiliteColorIndex_;
     GLuint lightPositionIndex_;
     GLuint cameraPositionIndex_;
-    GLuint fresnelZeroIndex_;
-
-    GLfloat fresnelZeroConstant;
 
     // index for texture sampler
     GLuint samplerIndex_;
@@ -51,7 +48,7 @@ namespace octet {
 
         void main() {
           gl_Position = modelToProjection * pos; 
-          position_ = gl_Position.xyz;
+          position_ = (modelToWorld * pos).xyz;
           normal_ = (modelToWorldIT * normal);
           tangent_ = (modelToWorldIT * tangent);
         }
@@ -77,7 +74,6 @@ namespace octet {
         uniform vec4 hiliteColor;
         uniform vec3 lightPosition;
         uniform vec3 cameraPosition;
-        uniform float fresnelZero;
         
         vec3 blend3(vec3 x){
           vec3 y = 1.0 - x*x;
@@ -86,8 +82,6 @@ namespace octet {
         }
 
         void main() {
-          vec4 leColor = vec4(0.0, 0.0, 0.0, 1.0);
-
           vec3 P = position_;
           vec3 L = normalize(lightPosition - P);
           vec3 V = normalize(cameraPosition - P);
@@ -109,14 +103,9 @@ namespace octet {
             cdiff.xyz += blend3(vec3(4.0 * (y - 0.75), 4.0 * (y - 0.5), 4.0 * (y - 0.25)));
           }
 
-          float base = max(0, 1.0 - dot(H, L));
-          float exp = pow(base, 5.0);
-	        float fresnel = fresnelZero+(1.0-fresnelZero)*exp;
+          vec4 cubemapColor = textureCube(sampler, reflect(vec3(V.x, -V.y, V.z), N));
 
-          vec4 cubemapColor = textureCube(sampler, reflect(V, N));
-
-          gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.6*cubemapColor.xyz, 1.0) + vec4(1.0)*fresnel + 0.8*cdiff + anis;
-          //gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.3*cubemapColor.xyz, 1.0) + 0.5*cdiff + anis;
+          gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.6*cubemapColor.xyz, 1.0) + 0.8*cdiff + anis;
         }
       );
     
@@ -133,12 +122,8 @@ namespace octet {
       hiliteColorIndex_ = glGetUniformLocation(program(), "hiliteColor");
       lightPositionIndex_ = glGetUniformLocation(program(), "lightPosition");
       cameraPositionIndex_ = glGetUniformLocation(program(), "cameraPosition");
-      fresnelZeroIndex_ = glGetUniformLocation(program(), "fresnelZero");
 
       samplerIndex_ = glGetUniformLocation(program(), "sampler");
-
-      fresnelZeroConstant = pow((1.0f-(1.0f/1.31f)), 2)/pow((1.0f+(1.0f/1.31f)), 2);
-      printf("Fresnel constant: %.4f\n", fresnelZeroConstant);
     }
 
     void render(const mat4t &modelToProjection, const mat4t &modelToWorld, mat4t &modelToWorldIT, 
@@ -166,7 +151,6 @@ namespace octet {
       glUniform4fv(hiliteColorIndex_, 1, hiliteColor.get());
       glUniform3fv(lightPositionIndex_, 1, lightPosition.get());
       glUniform3fv(cameraPositionIndex_, 1, cameraPosition.get());
-      glUniform1f(fresnelZeroIndex_, fresnelZeroConstant);
       glUniform1i(samplerIndex_, sampler);
     }
   };
@@ -200,6 +184,7 @@ namespace octet {
       const char vertex_shader[] = SHADER_STR(
         varying vec4 color_;
         varying vec3 normal_;
+        varying vec3 V_;
 
         attribute vec4 pos;
         attribute vec3 normal;
@@ -244,7 +229,8 @@ namespace octet {
           }
           gl_Position = modelToProjection * pos; 
           color_ = cdiff + anis;
-          normal_ = (modelToWorld * vec4(normal, 1)).xyz;
+          V_ = V;
+          normal_ = N;
         }
       );
 
@@ -255,12 +241,13 @@ namespace octet {
       const char fragment_shader[] = SHADER_STR(
         varying vec4 color_;
         varying vec3 normal_;
+        varying vec3 V_;
 
         uniform samplerCube sampler;
 
         void main() {
-          vec4 cubemapColor = textureCube(sampler, normal_);
-          gl_FragColor = cubemapColor + color_; //textureCube(sampler, normal_);
+          vec4 cubemapColor = textureCube(sampler, reflect(vec3(V_.x, -V_.y, V_.z), normal_));
+          gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.6*cubemapColor.xyz, 1.0) + color_;
         }
       );
     
