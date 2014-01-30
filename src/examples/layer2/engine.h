@@ -32,6 +32,12 @@ namespace octet {
     bool just_press_frag_shader_mode;
 
     bool just_press_dump_info;
+    
+    bool normals_visible;
+    bool just_press_normals_visible;
+
+    bool tangents_visible;
+    bool just_press_tangents_visible;
 
     enum model {
       MODEL_CD,
@@ -52,6 +58,8 @@ namespace octet {
 
     color_shader cshader;
     mesh ring;
+    mesh ring_normals;
+    mesh ring_tangents;
 
   public:
     // this is called when we construct the class
@@ -88,12 +96,24 @@ namespace octet {
 
       just_press_dump_info = false;
 
-      lightPosition = vec3(0.0f, 0.0f, 1.0f);
+      normals_visible = false;
+      just_press_normals_visible = false;
+
+      tangents_visible = false;
+      just_press_tangents_visible = false;
+
+      lightPosition = vec3(0.0f, -1.0f*sin(10*3.14159f/180.0f), 1.0f*cos(10*3.14159f/180.0f));
       hiliteColor = vec4(1.0f, 0.7f, 0.3f, 1.0f);
 
       mesh_builder mb;
       mb.add_one_CD(0.3f, 2.0f, 1.0f, 1.0f);
       mb.get_mesh(ring);
+
+      ring_normals.init();
+      ring_normals.make_normal_visualizer(ring, 1.0f, attribute_normal);
+
+      ring_tangents.init();
+      ring_tangents.make_normal_visualizer(ring, 1.0f, attribute_tangent);
 
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -219,6 +239,24 @@ namespace octet {
       }
       if (!is_key_down('N')) {
         just_press_dump_info = false;
+      }
+
+      if (is_key_down('R') && !just_press_normals_visible) {
+        normals_visible = !normals_visible;
+        printf("Normals visible: %s.\n", normals_visible? "yes": "no");
+        just_press_normals_visible = true;
+      }
+      if (!is_key_down('R')) {
+        just_press_normals_visible = false;
+      }
+
+      if (is_key_down('Y') && !just_press_tangents_visible) {
+        tangents_visible = !tangents_visible;
+        printf("Tangents visible: %s.\n", tangents_visible? "yes": "no");
+        just_press_tangents_visible = true;
+      }
+      if (!is_key_down('Y')) {
+        just_press_tangents_visible = false;
       }
     }
 
@@ -406,6 +444,16 @@ namespace octet {
       }
 
       ring.render();
+
+      if (normals_visible) {
+        cshader.render(modelToProjection, vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        ring_normals.render();
+      }
+
+      if (tangents_visible) {
+        cshader.render(modelToProjection, vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        ring_tangents.render();
+      }
     }
      
   };

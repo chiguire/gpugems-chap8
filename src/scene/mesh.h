@@ -126,8 +126,9 @@ namespace octet {
     void set_default_attributes() {
       add_attribute(attribute_pos, 3, GL_FLOAT, 0);
       add_attribute(attribute_normal, 3, GL_FLOAT, 12);
-      add_attribute(attribute_uv, 2, GL_FLOAT, 24);
-      set_params(32, 0, 0, GL_TRIANGLES, GL_UNSIGNED_INT);
+      add_attribute(attribute_normal, 3, GL_FLOAT, 24);
+      add_attribute(attribute_uv, 2, GL_FLOAT, 36);
+      set_params(44, 0, 0, GL_TRIANGLES, GL_UNSIGNED_INT);
     }
 
     void clear_attributes() {

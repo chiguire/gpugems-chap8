@@ -109,14 +109,14 @@ namespace octet {
             cdiff.xyz += blend3(vec3(4.0 * (y - 0.75), 4.0 * (y - 0.5), 4.0 * (y - 0.25)));
           }
 
-          float base = 1.0 - w;
+          float base = max(0, 1.0 - dot(H, L));
           float exp = pow(base, 5.0);
 	        float fresnel = fresnelZero+(1.0-fresnelZero)*exp;
 
-          vec4 cubemapColor = textureCube(sampler, reflect(vec3(V.x, -V.y, V.z), -N));
+          vec4 cubemapColor = textureCube(sampler, reflect(V, N));
 
-          //gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.8*fresnel*cubemapColor.xyz, 1.0) + 0.8*cdiff + anis;
-          gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.3*cubemapColor.xyz, 1.0) + 0.8*cdiff + anis;
+          gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.6*cubemapColor.xyz, 1.0) + vec4(1.0)*fresnel + 0.8*cdiff + anis;
+          //gl_FragColor = vec4(0.08411, 0.25843, 0.08980, 1.0) + vec4(0.3*cubemapColor.xyz, 1.0) + 0.5*cdiff + anis;
         }
       );
     
