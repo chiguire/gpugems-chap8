@@ -39,6 +39,9 @@ namespace octet {
     bool tangents_visible;
     bool just_press_tangents_visible;
 
+    bool show_help;
+    bool just_press_show_help;
+
     enum model {
       MODEL_CD,
       MODEL_CUBE
@@ -103,6 +106,9 @@ namespace octet {
 
       tangents_visible = false;
       just_press_tangents_visible = false;
+
+      show_help = true;
+      just_press_show_help = false;
 
       lightPosition = vec3(0.0f, -1.0f*sin(10*3.14159f/180.0f), 1.0f*cos(10*3.14159f/180.0f));
       hiliteColor = vec4(1.0f, 0.7f, 0.3f, 1.0f);
@@ -262,6 +268,14 @@ namespace octet {
       }
       if (!is_key_down('Y')) {
         just_press_tangents_visible = false;
+      }
+      
+      if (is_key_down('J') && !just_press_show_help) {
+        show_help = !show_help;
+        just_press_show_help = true;
+      }
+      if (!is_key_down('J')) {
+        just_press_show_help = false;
       }
     }
 
@@ -462,6 +476,9 @@ namespace octet {
     }
      
     void renderHelp() {
+
+      if (!show_help) return;
+
       glDisable(GL_DEPTH_TEST);
 
       glBindBuffer(GL_ARRAY_BUFFER, 0);

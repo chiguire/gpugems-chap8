@@ -1,11 +1,11 @@
----
+ï»¿---
 title: 'Maths & Graphics - Coursework 2 - Simulating Diffraction'
 author:
 - name: Ciro Duran
 - name: Bogdan Catana
 ---
 
-Ciro DurÃ¡n &lt;<ma302cd@gold.ac.uk>&gt;, Bogdan Catana &lt;<b.i.catana@gmail.com>&gt;\
+Ciro Duran &lt;<ma302cd@gold.ac.uk>&gt;, Bogdan Catana &lt;<b.i.catana@gmail.com>&gt;\
 *Goldsmiths, University of London*\
 *MSc Computer Games & Entertainment*\
 *Maths & Graphics*\
@@ -35,12 +35,7 @@ In computer graphics, most surface reflection models ignore the wavelike effects
 
 Basically light behaves as a wave and the ray theory of light used in computer graphics is an approximation of this wave theory. The simple, one-dimensional wave is completely described by a wavelength and an amplitude. As cited from the GPU Gems:
 
-“The wavelength characterizes the oscillating pattern, while the amplitude determines the intensity of the wave. Visible light comprises a superposition of these waves, with wavelengths ranging from 0.5 microns (ultraviolet) to 1 micron (infrared). The color of a light source is determined by the distribution of amplitudes of the waves emanating from it. “
-
-
-
-
-
+The wavelength characterizes the oscillating pattern, while the amplitude determines the intensity of the wave. Visible light comprises a superposition of these waves, with wavelengths ranging from 0.5 microns (ultraviolet) to 1 micron (infrared). The color of a light source is determined by the distribution of amplitudes of the waves emanating from it.
 
 #### The Physics of Diffraction
 
@@ -52,7 +47,7 @@ The main difference between the wave theory and the usual ray theory is that the
 
 This is perfectly illustrated in GPU Gems as cited below:
 
-“We illustrate this phenomenon in Figure 8-3, where we show two extreme cases. In the first case (a), the two waves are "in phase" and the amplitudes add up, as in the ray theory. In the second case (b), the waves cancel each other, resulting in a wave of zero amplitude. These two cases illustrate that waves can interfere both positively and negatively. In general, the resulting wave lies somewhere in between these two extremes. The first case is, however, the one we are most interested in: When waves interfere in phase, they produce the maximum possible intensity, which eventually will be observed at the receiver.”
+We illustrate this phenomenon in Figure 8-3, where we show two extreme cases. In the first case (a), the two waves are "in phase" and the amplitudes add up, as in the ray theory. In the second case (b), the waves cancel each other, resulting in a wave of zero amplitude. These two cases illustrate that waves can interfere both positively and negatively. In general, the resulting wave lies somewhere in between these two extremes. The first case is, however, the one we are most interested in: When waves interfere in phase, they produce the maximum possible intensity, which eventually will be observed at the receiver.
 
 Image: http://http.developer.nvidia.com/GPUGems/elementLinks/fig08-02.jpg
 
@@ -85,7 +80,8 @@ In order to make the implementation work for a CD, we needed to specify the tang
 
 ![Diffraction2](diffraction2.jpg "Diffraction screenshot example - Using vertex processor")
 ![Diffraction3](diffraction3.jpg "Diffraction screenshot example - Using fragment processor")
-![Diffraction4](diffraction4.jpg "Diffraction screenshot example – Displaying the tangents")
+![Diffraction4](diffraction4.jpg "Diffraction screenshot example - Displaying the tangents")
+![Diffraction5](diffraction5.jpg "Diffraction screenshot example - Displaying the tangents")
 
 ## References
 http://www.nvidia.com/object/gpu_gems_cd.html
